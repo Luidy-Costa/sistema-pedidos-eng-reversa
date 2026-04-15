@@ -1,99 +1,53 @@
-let itens = [];
-let total = 0;
+import { ProductFactory } from './ProductFactory.js';
+import { OrderManager } from './OrderManager.js';
 
-function adicionar() {
-  let produto = document.getElementById("produto").value;
-  let qtd = document.getElementById("qtd").value;
+const orderManager = OrderManager.getInstance();
 
-  if (qtd == "" || qtd <= 0) {
-    alert("Quantidade inválida");
-  }
+// Função global para o HTML (agora apenas delega para os módulos)
+window.adicionar = () => {
+    const type = document.getElementById("produto").value;
+    const qtd = parseInt(document.getElementById("qtd").value);
 
-  let preco = 0;
+    if (isNaN(qtd) || qtd <= 0) {
+        alert("Quantidade inválida");
+        return;
+    }
 
-  if (produto == "pastel") preco = 5;
-  if (produto == "caldo") preco = 7;
-  if (produto == "refrigerante") preco = 4;
-  if (produto == "suco") preco = 6;
+    const newProduct = ProductFactory.createProduct(type, qtd);
+    orderManager.addItem(newProduct);
+    
+    atualizarInterface();
+};
 
-  let subtotal = preco * qtd;
+window.finalizar = () => {
+    const total = orderManager.calculateTotal();
+    if (total === 0) return alert("O pedido está vazio!");
 
-  itens.push({
-    produto: produto,
-    qtd: qtd,
-    subtotal: subtotal
-  });
+    let desconto = 0;
+    if (total > 100) desconto = total * 0.2;
+    else if (total > 50) desconto = total * 0.1;
 
-  atualizarLista();
-}
+    const taxa = total * 0.05;
+    const totalFinal = total - desconto + taxa;
 
-function atualizarLista() {
-  let lista = document.getElementById("lista");
-  lista.innerHTML = "";
+    alert(`Total final: R$ ${totalFinal.toFixed(2)}`);
+    localStorage.setItem("ultimoPedido", totalFinal);
+    
+    orderManager.clear();
+    atualizarInterface();
+};
 
-  total = 0;
+function atualizarInterface() {
+    const listaUI = document.getElementById("lista");
+    const totalUI = document.getElementById("total");
+    
+    listaUI.innerHTML = "";
+    
+    orderManager.items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} | Qtd: ${item.quantity} | R$ ${item.subtotal}`;
+        listaUI.appendChild(li);
+    });
 
-  for (let i = 0; i < itens.length; i++) {
-    let item = itens[i];
-
-    let li = document.createElement("li");
-    li.innerHTML = item.produto + " | Qtd: " + item.qtd + " | R$ " + item.subtotal;
-
-    lista.appendChild(li);
-
-    total = total + item.subtotal;
-  }
-
-  document.getElementById("total").innerText = total;
-
-  salvarTotal();
-}
-
-function salvarTotal() {
-  // duplicação de responsabilidade
-  localStorage.setItem("total", total);
-}
-
-function finalizar() {
-  let desconto = 0;
-
-  if (total > 100) {
-    desconto = total * 0.2;
-  } else if (total > 50) {
-    desconto = total * 0.1;
-  }
-
-  let taxa = total * 0.05;
-
-  let totalFinal = total - desconto + taxa;
-
-  alert("Total final: " + totalFinal);
-
-  localStorage.setItem("ultimoPedido", totalFinal);
-
-  limparTudo();
-}
-
-function limparTudo() {
-  itens = [];
-  total = 0;
-
-  document.getElementById("lista").innerHTML = "";
-  document.getElementById("total").innerText = 0;
-}
-
-function removerUltimo() {
-  itens.pop();
-  atualizarLista();
-}
-
-// função duplicada de cálculo (problema proposital)
-function calcularTotal() {
-  let soma = 0;
-
-  for (let i = 0; i < itens.length; i++) {
-    soma += itens[i].subtotal;
-  }
-
-  return soma;
+    totalUI.innerText = orderManager.calculateTotal().toFixed(2);
 }
