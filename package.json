@@ -1,0 +1,27 @@
+{
+  "name": "sistema-pedidos-eng-reversa",
+  "version": "1.0.0",
+  "description": "Arquitetura de Sistemas   **Professor:** Dr. Renato William Rodrigues de Souza   **Curso:** Análise e Desenvolvimento de Sistemas   **Instituição:** IFCE - Campus Boa Viagem",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Luidy-Costa/sistema-pedidos-eng-reversa.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Luidy-Costa/sistema-pedidos-eng-reversa/issues"
+  },
+  "homepage": "https://github.com/Luidy-Costa/sistema-pedidos-eng-reversa#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3"
+  }
+}
